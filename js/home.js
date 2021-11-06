@@ -1,8 +1,6 @@
 
 String.prototype.replaceAll  = function(s1,s2){ return this.replace(new RegExp(s1,"gm"),s2); }
 String.prototype.trim=function(){ return this.replace(/(^\s*)|(\s*$)/g, ""); }
-var base64EncodeChars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";var base64DecodeChars=new Array(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-1,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,-1,-1,-1,-1,-1);function base64encode(str){var out,i,len;var c1,c2,c3;len=str.length;i=0;out="";while(i<len){c1=str.charCodeAt(i++)&0xff;if(i==len){out+=base64EncodeChars.charAt(c1>>2);out+=base64EncodeChars.charAt((c1&0x3)<<4);out+="==";break}c2=str.charCodeAt(i++);if(i==len){out+=base64EncodeChars.charAt(c1>>2);out+=base64EncodeChars.charAt(((c1&0x3)<<4)|((c2&0xF0)>>4));out+=base64EncodeChars.charAt((c2&0xF)<<2);out+="=";break}c3=str.charCodeAt(i++);out+=base64EncodeChars.charAt(c1>>2);out+=base64EncodeChars.charAt(((c1&0x3)<<4)|((c2&0xF0)>>4));out+=base64EncodeChars.charAt(((c2&0xF)<<2)|((c3&0xC0)>>6));out+=base64EncodeChars.charAt(c3&0x3F)}return out}function base64decode(str){var c1,c2,c3,c4;var i,len,out;len=str.length;i=0;out="";while(i<len){do{c1=base64DecodeChars[str.charCodeAt(i++)&0xff]}while(i<len&&c1==-1);if(c1==-1)break;do{c2=base64DecodeChars[str.charCodeAt(i++)&0xff]}while(i<len&&c2==-1);if(c2==-1)break;out+=String.fromCharCode((c1<<2)|((c2&0x30)>>4));do{c3=str.charCodeAt(i++)&0xff;if(c3==61)return out;c3=base64DecodeChars[c3]}while(i<len&&c3==-1);if(c3==-1)break;out+=String.fromCharCode(((c2&0XF)<<4)|((c3&0x3C)>>2));do{c4=str.charCodeAt(i++)&0xff;if(c4==61)return out;c4=base64DecodeChars[c4]}while(i<len&&c4==-1);if(c4==-1)break;out+=String.fromCharCode(((c3&0x03)<<6)|c4)}return out}function utf16to8(str){var out,i,len,c;out="";len=str.length;for(i=0;i<len;i++){c=str.charCodeAt(i);if((c>=0x0001)&&(c<=0x007F)){out+=str.charAt(i)}else if(c>0x07FF){out+=String.fromCharCode(0xE0|((c>>12)&0x0F));out+=String.fromCharCode(0x80|((c>>6)&0x3F));out+=String.fromCharCode(0x80|((c>>0)&0x3F))}else{out+=String.fromCharCode(0xC0|((c>>6)&0x1F));out+=String.fromCharCode(0x80|((c>>0)&0x3F))}}return out}function utf8to16(str){var out,i,len,c;var char2,char3;out="";len=str.length;i=0;while(i<len){c=str.charCodeAt(i++);switch(c>>4){case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:out+=str.charAt(i-1);break;case 12:case 13:char2=str.charCodeAt(i++);out+=String.fromCharCode(((c&0x1F)<<6)|(char2&0x3F));break;case 14:char2=str.charCodeAt(i++);char3=str.charCodeAt(i++);out+=String.fromCharCode(((c&0x0F)<<12)|((char2&0x3F)<<6)|((char3&0x3F)<<0));break}}return out}
-
 function pagego($url,$total){
 	$page=$('#page').val();
 	if($page>0&&($page<=$total)){
@@ -176,7 +174,7 @@ var MAC={
 		},
 		'Clear': function(){
 			MAC.Cookie.Del('mac_history');
-			$('#history_box').html('<li class="hx_clear">已清空观看记录</li>');
+			$('#history_box').html('<li class="hx_clear">已清空观看记录。</li>');
 		},	
 		'Show': function(){
 			$('#history_box').show();
@@ -207,7 +205,7 @@ var MAC={
 				}
 			}
 			html = '<dl class="drop-box history_box" id="history_box" style="display:none;position:absolute;">';
-			html +='<dt><a class="dt_title" target="_self" href="javascript:void(0)" onclick="MAC.History.Clear();">清空</a></dt>';
+			html +='<dt><a target="_self" href="javascript:void(0)" onclick="MAC.History.Clear();">清空</a> | <a target="_self" href="javascript:void(0)" onclick="MAC.History.Hide();">关闭</a></dt>';
 			if(jsondata.length > 0){
 				for($i=0; $i<jsondata.length; $i++){
 					if($i%2==1){
@@ -258,8 +256,8 @@ var MAC={
 	'Suggest': {
 		'Show': function($id,$limit,$ajaxurl,$jumpurl){
 			try{
-			$("#"+$id).autocomplete($ajaxurl,{
-				width: 150,scrollHeight: 125,minChars: 1,matchSubset: 1,max: $limit,cacheLength: 10,multiple: true,matchContains: true,autoFill: false,dataType: "json",
+			$("#"+$id).autocomplete(SitePath+$ajaxurl,{
+				width: 175,scrollHeight: 300,minChars: 1,matchSubset: 1,max: $limit,cacheLength: 10,multiple: true,matchContains: true,autoFill: false,dataType: "json",
 				parse:function(obj) {
 					if(obj.status){
 						var parsed = [];
@@ -280,7 +278,7 @@ var MAC={
 					return row.d_name;
 				}
 			}).result(function(event, data, formatted) {
-				location.href = $jumpurl + encodeURIComponent(data.d_name);
+				location.href = SitePath+ $jumpurl + encodeURIComponent(data.d_name);
 			});
 			}catch(e){}
 		}
@@ -357,7 +355,7 @@ var MAC={
 			$("#star_all").text( $r.scoreall );
 			$("#star_pjf").text( $r.score );
 			$("#star_shi").text( parseInt($r.score) );
-			$("#star_ge").text( "." +  ($r.score.toString().split('.')[1]==undefined ? '0' : $r.score.toString().split('.')[1]) );
+			$("#star_ge").text( "." +  $r.score.toString().split('.')[1] );
 			$(".star_current").width($r.score*10);
 		}
 	},
@@ -384,7 +382,7 @@ var MAC={
 			}
 		},	
 		'Send': function($ajaxurl,$tab,$ac){
-			$.ajax({type: 'get',timeout: 5000, url: $ajaxurl + "&tab="+$tab+"&ac2="+$ac ,
+			$.ajax({type: 'get',timeout: 5000, url: SitePath + $ajaxurl + "&tab="+$tab+"&ac2="+$ac ,
 				error: function(){
 					alert('顶踩数据加载失败');
 				},
@@ -428,7 +426,6 @@ var MAC={
 				if($ajaxurl.indexOf('{pg}')>0){
 					$ajaxurl = $ajaxurl.replace('{pg}',$("#page").val() );
 				};
-				
 				$.ajax({
 					type: 'get',
 					url: $ajaxurl,
@@ -526,11 +523,11 @@ $(function(){
 	//用户登录初始化
 	MAC.Login.Init('login');
 	//搜索联想初始化
-	MAC.Suggest.Show('wd',10, SitePath+'inc/ajax.php?ac=suggest&aid='+SiteAid, SitePath+'index.php?m=vod-search-wd-');
+	MAC.Suggest.Show('wd',10,'inc/ajax.php?ac=suggest&aid='+SiteAid,'index.php?m=vod-search-wd-');
 	//顶踩初始化
-	MAC.Digg.Show(SitePath+'inc/ajax.php?ac=digg&aid='+SiteAid+'&id='+SiteId);
+	MAC.Digg.Show('inc/ajax.php?ac=digg&aid='+SiteAid+'&id='+SiteId);
 	//ajax评论初始化
-	MAC.Comment.Show(SitePath+'index.php?m=comment-show-aid-'+SiteAid+'-vid-'+SiteId);
+	//MAC.Comment.Show('index.php?m=comment-show-aid-'+SiteAid+'-vid-'+SiteId);
 	//定时任务初始化
 	MAC.Timming();
 });
